@@ -10,8 +10,18 @@
 
     <hr>
     <textarea rows="20" cols="90" id="command-output" disabled="true"></textarea>
-    <div id="status"></div>
+    <div id="status">
+        This is where the status stuff goes
+    </div>
     <hr>
+
+<a href="#" id="drag">item</a>
+<script type="text/javascript" charset="utf-8">
+  document.getElementById('drag').ondragstart = (event) => {
+    event.preventDefault()
+    ipcRenderer.send('ondragstart', '/path/to/item')
+  }
+</script>
 
     <script src="./gui-funct.js"></script>
     <script>

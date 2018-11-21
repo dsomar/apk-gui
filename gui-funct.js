@@ -9,26 +9,48 @@ var is = require("electron-is");
 // Win10 with Git-Bash (windows Subsystem for Linux) https://git-scm.com/   https://git-for-windows.github.io/
 //
 
+
+
 function appendOutput(msg) { getCommandOutput().value += (msg+'\n'); };
 function setStatus(msg)    { getStatus().innerHTML = msg; };
 
-function showOS() {
-    if (is.windows())
-      appendOutput("Windows Detected.")
-    if (is.macOS())
-      appendOutput("Apple OS Detected.")
-    if (is.linux())
-      appendOutput("Linux Detected.")
+// function showOS() {
+//     if (is.windows())
+//       appendOutput("Windows Detected.")
+//     if (is.macOS())
+//       appendOutput("Apple OS Detected.")
+//     if (is.linux())
+//       appendOutput("Linux Detected.")
+// }
+
+// https://discuss.atom.io/t/possible-to-get-local-filesystem-path-from-drag-and-drop-file/28858
+document.ondragover = document.ondrop = (ev) => {
+  ev.preventDefault()
 }
+
+document.body.ondrop = (ev) => {
+  ev.preventDefault();
+
+  // SOURCE: http://jsfiddle.net/9C2EF/
+  // TODO cleanup and refactor
+  var files = ev.dataTransfer.files;
+  for (var i = 0; i < ev.dataTransfer.files.length ; i++) {
+    appendOutput(files[i].name);
+  }
+
+  
+}
+
 
 function backgroundProcess() {
     const process = require('child_process');   // The power of Node.JS
 
-    showOS();
+    // showOS();
     var cmd = (is.windows()) ? 'test.bat' : './test.sh';      
-    console.log('cmd:', cmd);
+    // console.log('cmd:', cmd);
         
-    var child = process.spawn(cmd); 
+    // var child = process.spawn(cmd); 
+    var child = process.spawn('ls', ['-a']);
 
     child.on('error', function(err) {
       appendOutput('stderr: <'+err+'>' );
@@ -45,9 +67,10 @@ function backgroundProcess() {
     child.on('close', function (code) {
         if (code == 0)
           setStatus('child process complete.');
+          // console.log('Another one bites the dust');
         else
           setStatus('child process exited with code ' + code);
 
-        getCommandOutput().style.background = "DarkGray";
+        // getCommandOutput().style.background = "DarkGray";
     });
 };
